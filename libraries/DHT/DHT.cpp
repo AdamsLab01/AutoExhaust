@@ -46,12 +46,15 @@ float DHT::readTemperature(bool S) {
       return f;
     }
   }
-  Serial.print("Read fail");
   return NAN;
 }
 
 float DHT::convertCtoF(float c) {
 	return c * 9 / 5 + 32;
+}
+
+float DHT::convertFtoC(float f) {
+  return (f - 32) * 5 / 9; 
 }
 
 float DHT::readHumidity(void) {
@@ -70,8 +73,21 @@ float DHT::readHumidity(void) {
       return f;
     }
   }
-  Serial.print("Read fail");
   return NAN;
+}
+
+float DHT::computeHeatIndex(float tempFahrenheit, float percentHumidity) {
+  // Adapted from equation at: https://github.com/adafruit/DHT-sensor-library/issues/9 and
+  // Wikipedia: http://en.wikipedia.org/wiki/Heat_index
+  return -42.379 + 
+           2.04901523 * tempFahrenheit + 
+          10.14333127 * percentHumidity +
+          -0.22475541 * tempFahrenheit*percentHumidity +
+          -0.00683783 * pow(tempFahrenheit, 2) +
+          -0.05481717 * pow(percentHumidity, 2) + 
+           0.00122874 * pow(tempFahrenheit, 2) * percentHumidity + 
+           0.00085282 * tempFahrenheit*pow(percentHumidity, 2) +
+          -0.00000199 * pow(tempFahrenheit, 2) * pow(percentHumidity, 2);
 }
 
 
@@ -81,10 +97,8 @@ boolean DHT::read(void) {
   uint8_t j = 0, i;
   unsigned long currenttime;
 
-  // pull the pin high and wait 250 milliseconds
-  digitalWrite(_pin, HIGH);
-  delay(250);
-
+  // Check if sensor was read less than two seconds ago and return early
+  // to use last reading.
   currenttime = millis();
   if (currenttime < _lastreadtime) {
     // ie there was a rollover
@@ -103,11 +117,15 @@ boolean DHT::read(void) {
 
   data[0] = data[1] = data[2] = data[3] = data[4] = 0;
   
+  // pull the pin high and wait 250 milliseconds
+  digitalWrite(_pin, HIGH);
+  delay(250);
+
   // now pull it low for ~20 milliseconds
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);
   delay(20);
-  cli();
+  noInterrupts();
   digitalWrite(_pin, HIGH);
   delayMicroseconds(40);
   pinMode(_pin, INPUT);
@@ -137,7 +155,7 @@ boolean DHT::read(void) {
 
   }
 
-  sei();
+  interrupts();
   
   /*
   Serial.println(j, DEC);

@@ -26,7 +26,7 @@ void loop() {
 
   case S_Emergency:
     F_Emergency();
-    break;
+  break;
   }
 }
 

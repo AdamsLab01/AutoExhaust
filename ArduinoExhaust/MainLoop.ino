@@ -1,28 +1,29 @@
 void loop() { 
-  switch(state) { 
+  switch(state) {
+    
   case S_Monitor:
     F_Monitor();
-    break;
+  break;
 
   case S_AutoInside:
     F_AutoInside();
-    break;
+  break;
 
   case S_AutoOutside:
     F_AutoOutside();
-    break;
+  break;
 
   case S_ManOut:
     F_ManOut();
-    break;
+  break;
 
   case S_ManIn:
     F_ManIn();
-    break;
+  break;
 
   case S_ManStop:
     F_ManStop();
-    break;
+  break;
 
   case S_Emergency:
     F_Emergency();

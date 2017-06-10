@@ -7,5 +7,3 @@ will open the indoor damer (and close the outdoor one) to exhaust the hot server
 to help heat it. If the central house heater is off then the hot server room air will be exhausted outside.
 
 For more information see - https://adambyers.com/2014/05/automatic-server-room-exhaust/ ?or ping adam@adambyers.com
-
-All code (except external libraries and third party code) is published under the MIT License.
